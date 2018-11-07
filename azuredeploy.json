@@ -180,7 +180,7 @@
     "osImageUbuntuVersion": "latest",
     "osImageCentosPublisher": "OpenLogic",
     "osImageCentosOffer": "CentOS",
-    "osImageCentosSKU": "7.1",
+    "osImageCentosSKU": "7.3",
     "osImageCentosVersion": "latest",
     "osImageRHELPublisher": "RedHat",
     "osImageRHELOffer": "RHEL",

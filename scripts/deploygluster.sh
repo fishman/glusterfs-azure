@@ -246,7 +246,7 @@ install_glusterfs_ubuntu() {
     then
         echo "adding gluster ppa"
         apt-get  -y install python-software-properties
-        apt-add-repository -y ppa:gluster/glusterfs-3.7
+        apt-add-repository -y ppa:gluster/glusterfs-4.1
         apt-get -y update
     fi
     
@@ -289,8 +289,10 @@ configure_gluster() {
     if [ $iscentos -eq 0 ];
     then
         install_glusterfs_centos
-        systemctl enable glusterd
-        systemctl start glusterd
+        systemctl enable glusterfsd
+        systemctl enable glusterfssharedstorage
+        systemctl start glusterfsd
+        systemctl start glusterfssharedstorage
 
     elif [ $isrhel -eq 0 ];
     then
