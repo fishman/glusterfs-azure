@@ -315,51 +315,15 @@ configure_gluster() {
     fi
 
     GLUSTERDIR="${MOUNTPOINT}/brick"
-    ls "${GLUSTERDIR}"
-    if [ ${?} -ne 0 ];
-    then
-        mkdir "${GLUSTERDIR}"
-    fi
 
-    if [ $NODEINDEX -lt $(($NODECOUNT-1)) ];
-    then
-        return
-    fi
+    mkdir -p "${GLUSTERDIR}"
 
-    allNodes="${NODENAME}:${GLUSTERDIR}"
+    allNodes="${PEERNODEPREFIX}0:${GLUSTERDIR} ${PEERNODEPREFIX}1:${GLUSTERDIR} ${PEERNODEPREFIX}2:${GLUSTERDIR} ${PEERNODEPREFIX}3:${GLUSTERDIR}"
     retry=10
     failed=1
-    while [ $retry -gt 0 ] && [ $failed -gt 0 ]; do
-        failed=0
-        index=0
-        echo retrying $retry >> /tmp/error
-        while [ $index -lt $(($NODECOUNT-1)) ]; do
-            ping -c 3 "${PEERNODEPREFIX}${index}" > /tmp/error
-            gluster peer probe "${PEERNODEPREFIX}${index}" >> /tmp/error
-            if [ ${?} -ne 0 ];
-            then
-                failed=1
-                echo "gluster peer probe ${PEERNODEPREFIX}${index} failed"
-            fi
-            gluster peer status >> /tmp/error
-            gluster peer status | grep "${PEERNODEPREFIX}${index}" >> /tmp/error
-            if [ ${?} -ne 0 ];
-            then
-                failed=1
-                echo "gluster peer status ${PEERNODEPREFIX}${index} failed"
-            fi
-            if [ $retry -eq 10 ]; then
-                allNodes="${allNodes} ${PEERNODEPREFIX}${index}:${GLUSTERDIR}"
-            fi
-            let index++
-        done
-        sleep 30
-        let retry--
-    done
-
-    sleep 60
+    sleep 20
     echo "creating gluster volume"
-    gluster volume create ${VOLUMENAME} rep 2 transport tcp ${allNodes} 2>> /tmp/error
+    gluster volume create ${VOLUMENAME} rep 3 transport tcp ${allNodes} 2>> /tmp/error
     gluster volume info 2>> /tmp/error
     gluster volume start ${VOLUMENAME} 2>> /tmp/error
     echo "done creating gluster volume"
